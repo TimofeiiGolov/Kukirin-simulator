@@ -1,0 +1,206 @@
+@import "tailwindcss";
+@font-face { font-family: 'Ride Sans'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('@fontsource-variable/roboto/files/roboto-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Ride Sans'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('@fontsource-variable/roboto/files/roboto-latin-ext-wght-normal.woff2') format('woff2'); unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family: 'Ride Sans'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('@fontsource-variable/roboto/files/roboto-cyrillic-wght-normal.woff2') format('woff2'); unicode-range: U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116; }
+
+:root { font-family: "Ride Sans", "Helvetica Neue", "Segoe UI", Arial, sans-serif; color: #f5f5f3; background: #111; font-synthesis: none; --accent: #f56808; --muted: #969794; --line: rgba(255,255,255,.14); }
+html, body, #root { height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+body { user-select: none; -webkit-user-select: none; }
+button, input { font: inherit; }
+button { cursor: pointer; touch-action: manipulation; }
+button:disabled { cursor: default; opacity: .45; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+button { transition: color .15s, background .15s, opacity .15s; }
+button svg { flex-shrink: 0; }
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* The riding HUD follows a 1280 × 720 reference, with safe areas on phones. */
+.ride-ui { position: absolute; inset: 0; pointer-events: none; color: #fff; --hud-size: clamp(.65px, .078125vw, 1.4px); text-shadow: 0 1px 8px rgba(0,0,0,.2); }
+.ride-ui button, .ride-ui input { pointer-events: auto; }
+.speedometer { position: absolute; top: max(env(safe-area-inset-top), calc(42 * var(--hud-size))); left: max(calc(env(safe-area-inset-left) + 16px), calc(60 * var(--hud-size))); width: calc(310 * var(--hud-size)); }
+.speed-reading { display: flex; align-items: baseline; gap: calc(12 * var(--hud-size)); white-space: nowrap; }
+.speed-number { font-size: calc(128 * var(--hud-size)); font-weight: 200; line-height: 1; letter-spacing: -.065em; font-variant-numeric: tabular-nums; }
+.speed-unit { font-size: calc(32 * var(--hud-size)); font-weight: 300; }
+.reverse-label { font-size: 15px; color: #ffb36f; }
+.speed-line { height: max(2px, calc(3 * var(--hud-size))); margin-top: calc(6 * var(--hud-size)); background: rgba(255,255,255,.4); overflow: hidden; }
+.speed-line > span { display: block; height: 100%; background: #ff9c21; transition: width .12s linear; }
+.ride-stats { display: flex; align-items: center; justify-content: space-between; margin-top: calc(15 * var(--hud-size)); font-size: calc(21 * var(--hud-size)); font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ride-stats small { font-size: .92em; opacity: .85; }
+.ride-stats i, .location-line > i { display: block; width: 1px; height: 1em; background: rgba(255,255,255,.5); }
+.low-battery { color: #ff766d; }
+.ride-secondary { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; font-size: max(11px, calc(11 * var(--hud-size))); letter-spacing: .03em; color: rgba(255,255,255,.82); }
+.ride-secondary button { padding: 5px 0; background: none; border: 0; text-shadow: inherit; }
+.ride-secondary button span { margin-left: 7px; font-weight: 300; opacity: .75; }
+.ride-secondary button:hover { color: #ffb36f; }
+.ride-details { font-size: 11px; padding-top: 10px; color: #f5f5f3; }
+.ride-details > div { display: flex; gap: 8px; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.2); }
+.ride-details b { font-weight: 500; white-space: nowrap; }
+.location-line { position: absolute; top: max(calc(env(safe-area-inset-top) + 15px), calc(69 * var(--hud-size))); left: 51.5%; transform: translateX(-50%); display: flex; align-items: center; gap: calc(30 * var(--hud-size)); font-size: calc(20 * var(--hud-size)); font-weight: 400; white-space: nowrap; }
+.location-line button, .surface-label { display: flex; align-items: center; gap: calc(20 * var(--hud-size)); }
+.location-line svg { width: calc(30 * var(--hud-size)); height: calc(30 * var(--hud-size)); }
+.location-line button { padding: 0; border: 0; background: none; color: inherit; text-shadow: inherit; }
+.location-line button:hover { opacity: .7; }
+.location-line > i { height: calc(28 * var(--hud-size)); }
+.ride-actions { position: absolute; top: max(calc(env(safe-area-inset-top) + 12px), calc(63 * var(--hud-size))); right: max(calc(env(safe-area-inset-right) + 18px), calc(54 * var(--hud-size))); display: flex; flex-direction: column; align-items: center; gap: calc(29 * var(--hud-size)); }
+.ride-actions button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; width: max(44px, calc(64 * var(--hud-size))); min-height: 44px; padding: 0; color: inherit; background: none; border: 0; text-shadow: inherit; }
+.ride-actions svg { width: calc(36 * var(--hud-size)); height: calc(36 * var(--hud-size)); min-width: 26px; min-height: 26px; }
+.ride-actions span { font-size: calc(17 * var(--hud-size)); font-weight: 400; }
+.ride-actions button:hover:enabled { opacity: .7; }
+.ride-events { position: absolute; top: calc(125 * var(--hud-size)); left: 52%; transform: translateX(-50%); width: min(260px, 33vw); text-align: center; }
+.ride-warning { font-size: 13px; margin-top: 16px; color: #ffe0b5; }
+.stunt-readout { padding: 14px 0; font-size: 14px; }
+.stunt-readout > div:first-child { display: flex; justify-content: space-between; align-items: baseline; }
+.stunt-readout strong { font-weight: 300; font-size: 28px; }
+.balance-track { position: relative; height: 3px; background: linear-gradient(to right, #ffffff60 39%, #b9c8ae 39% 76%, #db5959 76%); margin: 12px 0; }
+.balance-track > span { position: absolute; width: 5px; height: 11px; top: -4px; background: white; transform: translateX(-50%); }
+.stunt-readout p { display: flex; justify-content: space-between; font-size: 12px; }
+.danger { color: #f27770; }
+
+/* Two independent pointers: steering on the left, pedals on the right. */
+.touch-controls { position: absolute; inset: 0; pointer-events: none; --control-size: clamp(110px, 16.4vw, 280px); --pedal-size: clamp(96px, 13.7vw, 230px); }
+.joystick-wrap { position: absolute; left: max(calc(env(safe-area-inset-left) + 18px), 5.95vw); bottom: max(calc(env(safe-area-inset-bottom) + 46px), 8.6vh); width: var(--control-size); height: var(--control-size); color: rgba(255,255,255,.8); font-size: clamp(12px, 1.4vw, 23px); }
+.touch-joystick { position: absolute; inset: 0; pointer-events: auto; touch-action: none; border: 2px solid rgba(255,255,255,.82); border-radius: 50%; background: rgba(25,25,25,.08); }
+.lean-forward, .lean-backward { position: absolute; width: 100%; text-align: center; white-space: nowrap; }
+.lean-forward { bottom: calc(100% + 14px); }
+.lean-backward { top: calc(100% + 9px); }
+.steer-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-top: 11px solid transparent; border-bottom: 11px solid transparent; opacity: .5; }
+.steer-arrow.left { left: 8%; border-right: 15px solid white; }
+.steer-arrow.right { right: 8%; border-left: 15px solid white; }
+.joystick-knob { position: absolute; transform: translate(-50%, -50%); width: 26%; height: 26%; border: 2px solid #fff; border-radius: 50%; background: #f5730b; pointer-events: none; }
+.pedals { position: absolute; right: max(calc(env(safe-area-inset-right) + 16px), 3.6vw); bottom: max(calc(env(safe-area-inset-bottom) + 46px), 8.2vh); display: flex; align-items: center; gap: clamp(12px, 1.65vw, 28px); }
+.pedal { pointer-events: auto; touch-action: none; display: flex; align-items: center; justify-content: center; width: var(--pedal-size); height: var(--pedal-size); border: 2px solid #fff; border-radius: 50%; color: #fff; font-size: clamp(15px, 1.8vw, 28px); font-weight: 600; transition: background .1s, transform .1s; }
+.pedal.brake { width: calc(var(--pedal-size) * .97); height: calc(var(--pedal-size) * .97); font-size: clamp(13px, 1.65vw, 26px); border-color: #df4a50; background: rgba(25,25,25,.08); }
+.pedal.throttle { background: #ef6800; }
+.pedal.pressed { transform: scale(.96); background: #fc7b14; }
+.pedal.brake.pressed { background: rgba(214,62,69,.42); }
+
+/* Shared controls (HUD panels and the garage). Garage layout lives in src/ui/garage.css. */
+.eyebrow { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; }
+.primary-button { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 0; border-radius: 3px; background: var(--accent); color: #fff; padding: 14px 18px; font-size: 14px; font-weight: 500; }
+.primary-button:hover { background: #fb7b1f; }
+.text-button { background: none; color: #e6e8e1; border: 0; padding: 10px 0; font-size: 12px; }
+input[type=range] { appearance: none; -webkit-appearance: none; width: 100%; height: 20px; margin: 0; background: transparent; cursor: pointer; touch-action: pan-y; }
+input[type=range]::-webkit-slider-runnable-track { background: #656b5e; height: 2px; }
+input[type=range]::-moz-range-track { background: #656b5e; height: 2px; }
+input[type=range]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #f4f5f0; margin-top: -5px; }
+input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 50%; background: #f4f5f0; }
+
+.incident-panel, .replay-panel { pointer-events: auto; position: absolute; left: 50%; transform: translateX(-50%); bottom: max(24px, env(safe-area-inset-bottom)); width: min(490px, 90vw); padding: 22px 25px; color: #f5f5f3; background: rgba(25,26,24,.94); border-top: 1px solid #ffffff36; text-shadow: none; }
+.incident-panel h2 { font-size: 20px; font-weight: 400; margin: 8px 0 18px; }
+.incident-stats { display: flex; justify-content: space-between; font-size: 21px; font-weight: 300; gap: 10px; }
+.incident-stats small { font-size: 10px; color: #b7bfb0; }
+.incident-buttons { display: flex; gap: 18px; align-items: center; justify-content: space-between; margin-top: 20px; }
+.replay-heading { display: flex; justify-content: space-between; gap: 10px; align-items: center; font-size: 11px; color: #c2c9ba; }
+.replay-heading .eyebrow { max-width: 60%; letter-spacing: .04em; }
+.replay-timeline { position: relative; margin-top: 20px; }
+.impact-tick { position: absolute; top: 4px; height: 12px; width: 1px; pointer-events: none; background: var(--accent); }
+.replay-times { display: flex; justify-content: space-between; font-size: 10px; color: #a3ad97; font-variant-numeric: tabular-nums; }
+.replay-buttons { margin-top: 20px; display: flex; align-items: center; gap: 20px; }
+.replay-buttons button { display: flex; align-items: center; gap: 10px; min-height: 32px; padding: 0; border: 0; background: none; color: #e1e7da; font-size: 12px; }
+.replay-buttons button:last-child { margin-left: auto; color: #ff9b51; }
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .ride-ui { --hud-size: clamp(.5px, .125vh, .78px); }
+  .speedometer { top: max(18px, env(safe-area-inset-top)); left: max(calc(env(safe-area-inset-left) + 18px), 4.7vw); }
+  .location-line { top: max(28px, env(safe-area-inset-top)); }
+  .ride-actions { top: max(20px, env(safe-area-inset-top)); right: max(calc(env(safe-area-inset-right) + 12px), 3.6vw); gap: 6px; }
+  .ride-actions span { font-size: 11px; }
+  .ride-secondary { margin-top: 4px; font-size: 10px; }
+  .touch-controls { --control-size: clamp(96px, 32vh, 156px); --pedal-size: clamp(86px, 28vh, 140px); }
+  .joystick-wrap { bottom: max(calc(env(safe-area-inset-bottom) + 30px), 7vh); font-size: 11px; }
+  .lean-forward { bottom: calc(100% + 7px); }
+  .pedals { bottom: max(calc(env(safe-area-inset-bottom) + 28px), 6.6vh); }
+  .pedal { font-size: 16px; }
+  .pedal.brake { font-size: 13px; }
+  .steer-arrow { border-top-width: 7px; border-bottom-width: 7px; }
+  .steer-arrow.left { border-right-width: 9px; }
+  .steer-arrow.right { border-left-width: 9px; }
+  .incident-panel, .replay-panel { bottom: max(12px, env(safe-area-inset-bottom)); padding: 14px 20px; }
+  .replay-timeline, .replay-buttons { margin-top: 10px; }
+}
+@media (orientation: portrait) {
+  .ride-ui { --hud-size: clamp(.66px, .18vw, 1px); }
+  .speedometer { top: max(calc(env(safe-area-inset-top) + 50px), 75px); left: max(calc(env(safe-area-inset-left) + 18px), 5vw); width: 210px; }
+  .speed-number { font-size: 86px; }
+  .speed-unit { font-size: 22px; }
+  .ride-stats { font-size: 14px; }
+  .location-line { left: max(calc(env(safe-area-inset-left) + 18px), 5vw); top: max(calc(env(safe-area-inset-top) + 18px), 25px); transform: none; font-size: 13px; gap: 16px; }
+  .location-line svg { width: 20px; height: 20px; }
+  .location-line button, .surface-label { gap: 10px; }
+  .ride-actions { top: max(calc(env(safe-area-inset-top) + 68px), 90px); right: max(calc(env(safe-area-inset-right) + 12px), 4vw); gap: 18px; }
+  .ride-actions svg { width: 28px; height: 28px; }
+  .ride-actions span { font-size: 11px; }
+  .ride-events { top: max(calc(env(safe-area-inset-top) + 230px), 240px); left: 50%; width: min(260px, 72vw); }
+  .touch-controls { --control-size: clamp(108px, 29vw, 180px); --pedal-size: clamp(82px, 22vw, 138px); }
+  .joystick-wrap { left: max(calc(env(safe-area-inset-left) + 16px), 5vw); bottom: max(calc(env(safe-area-inset-bottom) + 52px), 8vh); font-size: 12px; }
+  .pedals { right: max(calc(env(safe-area-inset-right) + 16px), 4vw); bottom: max(calc(env(safe-area-inset-bottom) + 52px), 8vh); gap: 10px; }
+  .pedal { font-size: 16px; }
+  .pedal.brake { font-size: 11px; }
+  .steer-arrow { border-top-width: 7px; border-bottom-width: 7px; }
+  .steer-arrow.left { border-right-width: 9px; }
+  .steer-arrow.right { border-left-width: 9px; }
+  .replay-buttons { gap: 15px; }
+  .replay-buttons button { font-size: 11px; }
+}
+@media (max-width: 359px) and (orientation: portrait) {
+  .touch-controls { --control-size: 95px; --pedal-size: 72px; }
+  .pedals { gap: 8px; }
+  .speedometer { width: 195px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+
+
+/* Рентген повтора: подписи травм поверх сцены */
+.xray-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.xray-layer svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.xray-layer .tone-red { --tone: #ff5a45; }
+.xray-layer .tone-amber { --tone: #ffb23a; }
+.xray-layer .tone-soft { --tone: #ffe07a; }
+.xray-layer line { stroke: var(--tone); stroke-width: 1; opacity: .75; }
+.xray-layer circle { fill: var(--tone); }
+.xray-label { position: absolute; left: 0; top: 0; max-width: 220px; padding: 5px 10px 6px; font-size: 12px; line-height: 1.25; color: #fff; background: rgba(4, 12, 24, .74); border-left: 2px solid var(--tone); animation: xray-pop .4s ease-out; }
+@keyframes xray-pop { from { opacity: 0; filter: brightness(2.6); } }
+@media (max-width: 639px), (max-height: 429px) { .xray-label { max-width: 150px; font-size: 10.5px; padding: 3px 7px 4px; } }
+
+/* Панель травм в повторе */
+.damage-panel { pointer-events: auto; position: absolute; left: max(calc(env(safe-area-inset-left) + 18px), calc(54 * var(--hud-size))); bottom: max(24px, env(safe-area-inset-bottom)); width: min(300px, 30vw); padding: 14px 16px; color: #e8eef5; background: rgba(4, 12, 24, .78); border-top: 2px solid var(--sev, #7fb4e6); text-shadow: none; }
+.damage-panel.sev-0 { --sev: #7fb4e6; }
+.damage-panel.sev-1, .incident-damage.sev-1 { --sev: #ffe07a; }
+.damage-panel.sev-2, .incident-damage.sev-2 { --sev: #ffb23a; }
+.damage-panel.sev-3, .incident-damage.sev-3 { --sev: #ff8340; }
+.damage-panel.sev-4, .damage-panel.sev-5, .incident-damage.sev-4, .incident-damage.sev-5 { --sev: #ff5a45; }
+.damage-head { display: flex; flex-direction: column; gap: 4px; }
+.damage-head .eyebrow { font-size: 10px; letter-spacing: .08em; color: #9fb3c8; }
+.damage-head strong { font-size: 17px; font-weight: 500; color: var(--sev); }
+.damage-stats { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; gap: 8px; margin: 12px 0 4px; }
+.damage-stats span { display: flex; flex-direction: column; }
+.damage-stats b { font-size: 18px; font-weight: 500; }
+.damage-stats small { font-size: 10px; color: #9fb3c8; }
+.damage-list { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: 38vh; overflow: hidden; }
+.damage-list li { display: flex; flex-direction: column; padding-left: 9px; border-left: 2px solid var(--tone, #5b6b7c); font-size: 12px; line-height: 1.25; }
+.damage-list li small { font-size: 10px; color: #9fb3c8; }
+.damage-list .tone-red { --tone: #ff5a45; }
+.damage-list .tone-amber { --tone: #ffb23a; }
+.damage-list .tone-soft { --tone: #ffe07a; }
+.damage-list .more { color: #9fb3c8; }
+.damage-list .fresh { animation: xray-pop .6s ease-out; }
+.damage-note { margin: 10px 0 0; font-size: 11px; color: #9fd0ff; }
+.incident-damage { margin: -8px 0 16px; font-size: 13px; color: var(--sev, #e8eef5); }
+.replay-buttons button[aria-pressed="true"] { color: #9fd0ff; }
+@media (orientation: landscape) and (max-height: 560px) {
+  .damage-panel { bottom: max(12px, env(safe-area-inset-bottom)); width: min(230px, 26vw); padding: 10px 12px; }
+  .damage-list { max-height: 30vh; }
+  .damage-list li small, .damage-note { display: none; }
+}
+@media (orientation: portrait) {
+  .damage-panel { left: 50%; transform: translateX(-50%); bottom: calc(max(24px, env(safe-area-inset-bottom)) + 196px); width: min(490px, 90vw); padding: 10px 14px; }
+  .damage-list, .damage-note { display: none; }
+  .damage-head { flex-direction: row; justify-content: space-between; align-items: baseline; }
+  .damage-stats { margin: 8px 0 0; }
+}
+
+
+.fps-counter { position: absolute; top: max(calc(env(safe-area-inset-top) + 46px), calc(118 * var(--hud-size))); left: 51.5%; transform: translateX(-50%); padding: 3px 9px; border-radius: 999px; background: rgba(0,0,0,.32); font-size: 11px; letter-spacing: .04em; color: rgba(255,255,255,.8); font-variant-numeric: tabular-nums; white-space: nowrap; text-shadow: none; }
+.fps-counter b { font-weight: 600; color: #7ed69b; }
+.fps-counter.is-low b { color: #f0c46a; }
